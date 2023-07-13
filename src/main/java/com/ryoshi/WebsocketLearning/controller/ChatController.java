@@ -10,20 +10,22 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ChatController {
 
-    @MessageMapping("/chat")    //Basic Mapping Where you want to send the message *FROM*
-    @SendTo("/topic/public")    //Where you want to send the message
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage){
-        return chatMessage;
-    }
-
-    //When joining!
-    //This will get send when you join and this will get wrapped by WebSocketEventlistener
-    @MessageMapping("/chat")    //Basic Mapping Where you want to send the message *FROM*
+    @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
-    public ChatMessage user(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
-        // Add username in WebSocket Session
-        headerAccessor.getSessionAttributes().put("username",chatMessage.getSender());
+    public ChatMessage sendMessage(
+            @Payload ChatMessage chatMessage
+    ) {
         return chatMessage;
     }
 
+    @MessageMapping("/chat.addUser")
+    @SendTo("/topic/public")
+    public ChatMessage addUser(
+            @Payload ChatMessage chatMessage,
+            SimpMessageHeaderAccessor headerAccessor
+    ) {
+        // Add username in web socket session
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        return chatMessage;
+    }
 }
